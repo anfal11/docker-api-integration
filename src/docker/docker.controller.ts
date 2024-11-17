@@ -62,8 +62,38 @@
 
 
 
-//4th
+//4th (working)
 
+// import { Controller, Get, Logger } from '@nestjs/common';
+// import { DockerService } from './docker.service';
+
+// @Controller('docker')
+// export class DockerController {
+//   private readonly logger = new Logger(DockerController.name);
+
+//   constructor(private readonly dockerService: DockerService) {}
+
+//   @Get('containers')
+//   async getContainers(): Promise<string> {
+//     this.logger.log('Fetching all containers');
+//     const containers = await this.dockerService.listContainers();
+
+//     // Map through the containers and format their details
+//     return containers
+//       .map(container =>
+//         `Container ID: ${container.Id}\n` +
+//         `Image: ${container.Image}\n` +
+//         `Names: ${container.Names.join(', ')}\n` +
+//         `Status: ${container.Status}\n` +
+//         `Ports: ${container.Ports.map(p => `${p.PrivatePort}->${p.PublicPort}`).join(', ')}\n` +
+//         `Created: ${new Date(container.Created * 1000).toLocaleString()}\n`
+//       )
+//       .join('\n\n');
+//   }
+// }
+
+
+//5th (details data log printing)
 import { Controller, Get, Logger } from '@nestjs/common';
 import { DockerService } from './docker.service';
 
@@ -78,8 +108,7 @@ export class DockerController {
     this.logger.log('Fetching all containers');
     const containers = await this.dockerService.listContainers();
 
-    // Map through the containers and format their details
-    return containers
+    const formattedContainers = containers
       .map(container =>
         `Container ID: ${container.Id}\n` +
         `Image: ${container.Image}\n` +
@@ -89,5 +118,11 @@ export class DockerController {
         `Created: ${new Date(container.Created * 1000).toLocaleString()}\n`
       )
       .join('\n\n');
+
+    // Log the detailed container information
+    this.logger.log(`Container Data:\n${formattedContainers}`);
+
+    // Return the formatted container details as a response
+    return formattedContainers;
   }
 }
