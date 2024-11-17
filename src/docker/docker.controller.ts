@@ -35,16 +35,27 @@
 
 
 //3rd
-import { Controller, Get, Param } from '@nestjs/common';
-import { DockerService } from './docker.service';
+import { Controller, Get, Post, Param, Logger } from '@nestjs/common';
 
 @Controller('docker')
 export class DockerController {
-  constructor(private readonly dockerService: DockerService) {}
+  private readonly logger = new Logger(DockerController.name);
 
-  @Get('start/:id')
-  async startContainer(@Param('id') id: string) {
-    const containerDetails = await this.dockerService.startContainer(id);
-    return containerDetails;  // Return detailed information about the container
+  @Get('containers')
+  getContainers() {
+    this.logger.log('Fetching all containers');
+    return 'List of containers';
+  }
+
+  @Post('containers/:id/start')
+  startContainer(@Param('id') id: string) {
+    this.logger.log(`Starting container with ID: ${id}`);
+    return `Starting container ${id}`;
+  }
+
+  @Post('containers/:id/stop')
+  stopContainer(@Param('id') id: string) {
+    this.logger.log(`Stopping container with ID: ${id}`);
+    return `Stopping container ${id}`;
   }
 }
