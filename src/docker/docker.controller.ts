@@ -44,8 +44,7 @@ export class DockerController {
 
   @Get('start/:id')
   async startContainer(@Param('id') id: string) {
-    const composeFilePath = '/path/to/your/docker-compose.yml'; // Update this path accordingly
-    const containerDetails = await this.dockerService.startContainer(id, composeFilePath);
+    const containerDetails = await this.dockerService.startContainer(id);
     return containerDetails;  // Return detailed information about the container
   }
 }

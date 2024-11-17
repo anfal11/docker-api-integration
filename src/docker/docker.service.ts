@@ -247,7 +247,7 @@ export class DockerService {
     this.docker = new Docker();
   }
 
-  async startContainer(containerId: string, composeFilePath: string): Promise<string> {
+  async startContainer(containerId: string): Promise<string> {
     try {
       const container = this.docker.getContainer(containerId);
 
@@ -269,9 +269,6 @@ export class DockerService {
                   .join(', ') : 'No ports mapped'}\n
         Created: ${new Date(containerInfo.Created * 1000).toLocaleString()}\n
       `;
-
-      // Log docker-compose file path for context (optional)
-      console.log(`Using docker-compose file: ${composeFilePath}`);
 
       return containerDetails;
     } catch (error) {
