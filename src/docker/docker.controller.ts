@@ -3,7 +3,7 @@
 // @Controller('docker')
 // export class DockerController {}
 import { Controller, Get, Param, Post, Delete } from '@nestjs/common';
-import { DockerService } from './docker/docker.service';
+import { DockerService } from './docker.service';
 
 @Controller('docker')
 export class DockerController {
