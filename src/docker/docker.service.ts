@@ -236,88 +236,116 @@
 
 
 //4th
-import { Injectable } from '@nestjs/common';
-// import * as Docker from 'dockerode';
+// import { Injectable } from '@nestjs/common';
+// // import * as Docker from 'dockerode';
+// import Docker from 'dockerode';
+
+// @Injectable()
+// export class DockerService {
+//   private docker: Docker;
+
+//   constructor() {
+//     this.docker = new Docker();
+//   }
+
+//   async startContainer(containerId: string): Promise<string> {
+//     try {
+//       const container = this.docker.getContainer(containerId);
+
+//       // Attempt to start the container
+//       await container.start();
+
+//       // Fetch container details
+//       const containerInfo = await container.inspect();
+
+//       // Ensure mappings are typed correctly
+//       const containerDetails = `
+//         Container ID: ${containerInfo.Id}\n
+//         Image: ${containerInfo.Image}\n
+//         Names: ${containerInfo.Names.join(', ')}\n
+//         Status: ${containerInfo.State.Status}\n
+//         Ports: ${containerInfo.NetworkSettings.Ports
+//           ? Object.entries(containerInfo.NetworkSettings.Ports)
+//               .map(([port, mappings]) => {
+//                 // Explicitly cast mappings to the correct type
+//                 const ports = mappings as { HostPort: string }[];
+//                 return `${port} -> ${ports.map(m => m.HostPort).join(', ')}`;
+//               })
+//               .join(', ')
+//           : 'No ports mapped'}\n
+//         Created: ${new Date(containerInfo.Created * 1000).toLocaleString()}\n
+//       `;
+
+//       return containerDetails;
+//     } catch (error) {
+//       console.error(`Error starting container ${containerId}:`, error);
+//       return `Error starting container ${containerId}: ${error.message}`;
+//     }
+//   }
+
+//   async listContainers(): Promise<string> {
+//     try {
+//       const containers = await this.docker.listContainers({ all: true });
+
+//       const containerList = containers
+//         .map((container) => {
+//           return `
+//             Container ID: ${container.Id}\n
+//             Image: ${container.Image}\n
+//             Names: ${container.Names.join(', ')}\n
+//             Status: ${container.Status}\n
+//             Ports: ${container.Ports.map((p) => `${p.PrivatePort} -> ${p.PublicPort}`).join(', ')}\n
+//             Created: ${new Date(container.Created * 1000).toLocaleString()}\n
+//           `;
+//         })
+//         .join('\n');
+
+//       return containerList;
+//     } catch (error) {
+//       console.error('Error listing containers:', error);
+//       return `Error listing containers: ${error.message}`;
+//     }
+//   }
+
+//   async stopContainer(containerId: string): Promise<string> {
+//     try {
+//       const container = this.docker.getContainer(containerId);
+
+//       // Attempt to stop the container
+//       await container.stop();
+
+//       return `Container ${containerId} stopped successfully.`;
+//     } catch (error) {
+//       console.error(`Error stopping container ${containerId}:`, error);
+//       return `Error stopping container ${containerId}: ${error.message}`;
+//     }
+//   }
+// }
+
+
+
+//5th 
+
+import { Injectable, Logger } from '@nestjs/common';
 import Docker from 'dockerode';
 
 @Injectable()
 export class DockerService {
-  private docker: Docker;
+  private readonly docker: Docker;
+  private readonly logger = new Logger(DockerService.name);
 
   constructor() {
-    this.docker = new Docker();
+    this.docker = new Docker(); // Ensure Dockerode is initialized correctly
   }
 
-  async startContainer(containerId: string): Promise<string> {
-    try {
-      const container = this.docker.getContainer(containerId);
-
-      // Attempt to start the container
-      await container.start();
-
-      // Fetch container details
-      const containerInfo = await container.inspect();
-
-      // Ensure mappings are typed correctly
-      const containerDetails = `
-        Container ID: ${containerInfo.Id}\n
-        Image: ${containerInfo.Image}\n
-        Names: ${containerInfo.Names.join(', ')}\n
-        Status: ${containerInfo.State.Status}\n
-        Ports: ${containerInfo.NetworkSettings.Ports
-          ? Object.entries(containerInfo.NetworkSettings.Ports)
-              .map(([port, mappings]) => {
-                // Explicitly cast mappings to the correct type
-                const ports = mappings as { HostPort: string }[];
-                return `${port} -> ${ports.map(m => m.HostPort).join(', ')}`;
-              })
-              .join(', ')
-          : 'No ports mapped'}\n
-        Created: ${new Date(containerInfo.Created * 1000).toLocaleString()}\n
-      `;
-
-      return containerDetails;
-    } catch (error) {
-      console.error(`Error starting container ${containerId}:`, error);
-      return `Error starting container ${containerId}: ${error.message}`;
-    }
-  }
-
-  async listContainers(): Promise<string> {
+  async listContainers(): Promise<any[]> {
     try {
       const containers = await this.docker.listContainers({ all: true });
-
-      const containerList = containers
-        .map((container) => {
-          return `
-            Container ID: ${container.Id}\n
-            Image: ${container.Image}\n
-            Names: ${container.Names.join(', ')}\n
-            Status: ${container.Status}\n
-            Ports: ${container.Ports.map((p) => `${p.PrivatePort} -> ${p.PublicPort}`).join(', ')}\n
-            Created: ${new Date(container.Created * 1000).toLocaleString()}\n
-          `;
-        })
-        .join('\n');
-
-      return containerList;
+      this.logger.log(`Fetched ${containers.length} containers`);
+      return containers;
     } catch (error) {
-      console.error('Error listing containers:', error);
-      return `Error listing containers: ${error.message}`;
-    }
-  }
-
-  async stopContainer(containerId: string): Promise<string> {
-    try {
-      const container = this.docker.getContainer(containerId);
-
-      // Attempt to stop the container
-      await container.stop();
-
-      return `Container ${containerId} stopped successfully.`;
-    } catch (error) {
-      console.error(`Error stopping container ${containerId}:`, error);
-      return `Error stopping container ${containerId}: ${error.message}`;
+      this.logger.error('Error fetching containers:', error);
+      throw error;
     }
   }
 }

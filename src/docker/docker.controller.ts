@@ -35,27 +35,59 @@
 
 
 //3rd
-import { Controller, Get, Post, Param, Logger } from '@nestjs/common';
+// import { Controller, Get, Post, Param, Logger } from '@nestjs/common';
+
+// @Controller('docker')
+// export class DockerController {
+//   private readonly logger = new Logger(DockerController.name);
+
+//   @Get('containers')
+//   getContainers() {
+//     this.logger.log('Fetching all containers');
+//     return 'List of containers';
+//   }
+
+//   @Post('containers/:id/start')
+//   startContainer(@Param('id') id: string) {
+//     this.logger.log(`Starting container with ID: ${id}`);
+//     return `Starting container ${id}`;
+//   }
+
+//   @Post('containers/:id/stop')
+//   stopContainer(@Param('id') id: string) {
+//     this.logger.log(`Stopping container with ID: ${id}`);
+//     return `Stopping container ${id}`;
+//   }
+// }
+
+
+
+//4th
+
+import { Controller, Get, Logger } from '@nestjs/common';
+import { DockerService } from './docker.service';
 
 @Controller('docker')
 export class DockerController {
   private readonly logger = new Logger(DockerController.name);
 
+  constructor(private readonly dockerService: DockerService) {}
+
   @Get('containers')
-  getContainers() {
+  async getContainers(): Promise<string> {
     this.logger.log('Fetching all containers');
-    return 'List of containers';
-  }
+    const containers = await this.dockerService.listContainers();
 
-  @Post('containers/:id/start')
-  startContainer(@Param('id') id: string) {
-    this.logger.log(`Starting container with ID: ${id}`);
-    return `Starting container ${id}`;
-  }
-
-  @Post('containers/:id/stop')
-  stopContainer(@Param('id') id: string) {
-    this.logger.log(`Stopping container with ID: ${id}`);
-    return `Stopping container ${id}`;
+    // Map through the containers and format their details
+    return containers
+      .map(container =>
+        `Container ID: ${container.Id}\n` +
+        `Image: ${container.Image}\n` +
+        `Names: ${container.Names.join(', ')}\n` +
+        `Status: ${container.Status}\n` +
+        `Ports: ${container.Ports.map(p => `${p.PrivatePort}->${p.PublicPort}`).join(', ')}\n` +
+        `Created: ${new Date(container.Created * 1000).toLocaleString()}\n`
+      )
+      .join('\n\n');
   }
 }
