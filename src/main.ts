@@ -17,7 +17,6 @@ async function bootstrap() {
     logger.log(`Incoming Request: ${req.method} ${req.url}`);
     next();
   });
-
   await app.listen(3000);
 }
 bootstrap();
