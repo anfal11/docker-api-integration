@@ -100,4 +100,39 @@ export class DockerService {
       this.logger.error('Error fetching containers:', error.message);
     }
   }
+
+  // Method to list containers
+  async listContainers(): Promise<any> {
+    try {
+      this.logger.log('Fetching container list...');
+      return await this.docker.listContainers({ all: true });
+    } catch (error) {
+      this.logger.error('Error listing containers:', error.message);
+      throw error;
+    }
+  }
+
+  // Method to start a container
+  async startContainer(containerId: string): Promise<void> {
+    try {
+      const container = this.docker.getContainer(containerId);
+      await container.start();
+      this.logger.log(`Container ${containerId} started successfully`);
+    } catch (error) {
+      this.logger.error(`Error starting container ${containerId}:`, error.message);
+      throw error;
+    }
+  }
+
+  // Method to stop a container
+  async stopContainer(containerId: string): Promise<void> {
+    try {
+      const container = this.docker.getContainer(containerId);
+      await container.stop();
+      this.logger.log(`Container ${containerId} stopped successfully`);
+    } catch (error) {
+      this.logger.error(`Error stopping container ${containerId}:`, error.message);
+      throw error;
+    }
+  }
 }
