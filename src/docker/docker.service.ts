@@ -237,7 +237,8 @@
 
 //4th
 import { Injectable } from '@nestjs/common';
-import * as Docker from 'dockerode';
+// import * as Docker from 'dockerode';
+import Docker from 'dockerode';
 
 @Injectable()
 export class DockerService {
